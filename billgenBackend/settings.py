@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os  # Add this line to import the os module
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -81,24 +83,46 @@ WSGI_APPLICATION = 'billgenBackend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# Determine if we're in production or local
+IS_PRODUCTION = config('IS_PRODUCTION', default=False, cast=bool)
 
-DATABASES = {
-    'default': {
-         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',  # The name of the database you created
-        'USER': 'somnath',     # Your PostgreSQL username
-        'PASSWORD': 'Somnath@#7008',  # Your PostgreSQL password
-        'HOST': 'localhost',
-        'PORT': '5432',
-    },
-    # 'mongo': {
-    #     'ENGINE': 'djongo',
-    #     'NAME': 'my_mongo_db',
-    #     'CLIENT': {
-    #         'host': 'mongodb://localhost:27017',
-    #     },
-    # }
-}
+if IS_PRODUCTION:
+    # In production, use Render's PostgreSQL database
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL')
+        )
+    }
+else:
+    # In local development, use the local PostgreSQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME', default='mydatabase'),
+            'USER': config('DB_USER', default='somnath'),
+            'PASSWORD': config('DB_PASSWORD', default='Somnath@#7008'),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='5432'),
+        }
+    }
+
+# DATABASES = {
+#     'default': {
+#          'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'mydatabase',  # The name of the database you created
+#         'USER': 'somnath',     # Your PostgreSQL username
+#         'PASSWORD': 'Somnath@#7008',  # Your PostgreSQL password
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     },
+#     # 'mongo': {
+#     #     'ENGINE': 'djongo',
+#     #     'NAME': 'my_mongo_db',
+#     #     'CLIENT': {
+#     #         'host': 'mongodb://localhost:27017',
+#     #     },
+#     # }
+# }
 
 
 # Password validation
