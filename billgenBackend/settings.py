@@ -86,13 +86,13 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
     },
-    'mongo': {
-        'ENGINE': 'djongo',
-        'NAME': 'my_mongo_db',
-        'CLIENT': {
-            'host': 'mongodb://localhost:27017',
-        },
-    }
+    # 'mongo': {
+    #     'ENGINE': 'djongo',
+    #     'NAME': 'my_mongo_db',
+    #     'CLIENT': {
+    #         'host': 'mongodb://localhost:27017',
+    #     },
+    # }
 }
 
 
