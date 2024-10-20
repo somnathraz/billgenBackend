@@ -5,6 +5,8 @@ from rest_framework import status
 from .models import User, BusinessProfile
 from .serializers import UserSerializer, BusinessProfileSerializer
 from drf_yasg.utils import swagger_auto_schema
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 
 class HelloWorld(APIView):
     def get(self, request):
@@ -50,3 +52,8 @@ class BusinessProfileView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def create_superuser(request):
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@example.com', 'bill@#7008')
+    return HttpResponse("Superuser created.")
