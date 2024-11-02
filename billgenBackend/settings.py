@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-8+te@9)iatj2i@lrqxq@tr$--zn&(4g+dj7&o-&waihceq!jl%
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.2', 'localhost']
 ALLOWED_HOSTS = ["*"]
 
 
@@ -46,11 +46,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
      'drf_yasg',
-    "login"
+    "login",
+    'corsheaders'
     
 ]
 
 MIDDLEWARE = [
+     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
      'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this line
@@ -60,7 +62,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+CORS_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'billgenBackend.urls'
 
 TEMPLATES = [

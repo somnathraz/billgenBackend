@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import User , BusinessProfile
+import random
+import string
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,15 +12,27 @@ class UserSerializer(serializers.ModelSerializer):
         # Ensure either email or phone number is provided
         if not data.get('email') and not data.get('phone_number'):
             raise serializers.ValidationError("At least one of 'email' or 'phone number' must be provided.")
-        
-        # Validate required fields (email, phone_number are already covered)
-        required_fields = ['username', 'businessType', 'businessIndustry']
-        for field in required_fields:
-            if not data.get(field):
-                raise serializers.ValidationError(f"'{field}' is required.")
-        
-        # GSTIN is optional, so no validation needed for it unless specific rules apply
+        # Check for existing users with the same email or phone number
+        if User.objects.filter(email=data.get('email')).exists():
+            raise serializers.ValidationError({"email": "A user with this email already exists."})
+
+        if User.objects.filter(phone_number=data.get('phone_number')).exists():
+            raise serializers.ValidationError({"phone_number": "A user with this phone number already exists."})
+
         return data
+    
+     
+    def create(self, validated_data):
+        # Generate a random username if not provided
+        if 'username' not in validated_data or not validated_data['username']:
+            validated_data['username'] = self.generate_random_username()
+        return super().create(validated_data)
+
+    @staticmethod
+    def generate_random_username(length=8):
+        return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+    
+    
     
     
 class BusinessProfileSerializer(serializers.ModelSerializer):

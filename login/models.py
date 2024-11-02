@@ -4,13 +4,13 @@
 from django.db import models
 
 class User(models.Model):
-    username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(unique=True)
-    phone_number = models.CharField(max_length=15, unique=True)  # Added phone number schema
-    businessType = models.CharField(max_length=200)
-    businessIndustry = models.CharField(max_length=200)
-    onlineShop = models.BooleanField(default=False) 
-    gst_in = models.CharField(max_length=15, unique=True)  # GST is typically alphanumeric in some regions (India: 15 digits)
+    username = models.CharField(max_length=150,blank=True, null=True)
+    email = models.EmailField(unique=True,blank=True, null=True)
+    phone_number = models.CharField(max_length=15, unique=True,blank=True, null=True)  # Added phone number schema
+    businessType = models.CharField(max_length=200,blank=True, null=True)
+    businessIndustry = models.CharField(max_length=200,blank=True, null=True)
+    onlineShop = models.BooleanField(default=False,blank=True, null=True) 
+    gst_in = models.CharField(max_length=15, unique=True,blank=True, null=True)  # GST is typically alphanumeric in some regions (India: 15 digits)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

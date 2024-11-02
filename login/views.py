@@ -27,12 +27,37 @@ class UserList(APIView):
     )
     def post(self, request):
         serializer = UserSerializer(data=request.data)
+        print(serializer.is_valid(),"from check")
         if serializer.is_valid():
+             # Check if a user with the same email or phone number exists
+            if User.objects.filter(email=serializer.validated_data.get('email')).exists():
+                return Response({'detail': 'User with this email already exists.'}, status=status.HTTP_409_CONFLICT)
+
+            if User.objects.filter(phone_number=serializer.validated_data.get('phone_number')).exists():
+                return Response({'detail': 'User with this phone number already exists.'}, status=status.HTTP_409_CONFLICT)
+
             serializer.save()  # Automatically triggers BusinessProfile creation via signal
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check for duplicate email or phone number errors
+      
+        
+        if 'phone_number' in serializer.errors:
+            if serializer.errors['phone_number'][0].code == 'unique':
+                return Response(
+                    {'detail': 'User with this phone number already exists.'}, 
+                    status=status.HTTP_409_CONFLICT
+                )
 
-
+        if 'email' in serializer.errors:
+            if serializer.errors['email'][0].code == 'unique':
+                return Response(
+                    {'detail': 'User with this email already exists.'}, 
+                    status=status.HTTP_409_CONFLICT
+                )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+    
+    
 class BusinessProfileView(APIView):
     @swagger_auto_schema(
         responses={200: BusinessProfileSerializer(many=True)},  # Documenting the response for GET
@@ -53,7 +78,3 @@ class BusinessProfileView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def create_superuser(request):
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser('admin', 'admin@example.com', 'bill@#7008')
-    return HttpResponse("Superuser created.")
